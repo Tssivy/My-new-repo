@@ -31,28 +31,38 @@ def main_window():
     win.show()
     sys.exit(app.exec_())
 
-def input_note():
+def input_note(): # окно для внесения новой информации 
     dlg = QDialog()
-    txt = QLineEdit()
 
+    # создание переменных для кнопки, строчки внесения текста и радиокнопок 
+    txt = QLineEdit()   
     b1 = QPushButton("Внести")
+    r1 = QRadioButton("Цитаты")
+    r2 = QRadioButton("Анекдоты")
+    r3 = QRadioButton("Внести заметку")
     
+    # создание вертикального и горизонтального слоя
     vbox = QVBoxLayout()
-    vbox.addWidget(txt)
+    hbox = QHBoxLayout()
+
+    # добавление в вертикальный слой попорядку: строчки для текста, горизонтального слоя с радиокнопками (они добавлены предварительно), кнопки 
+    vbox.addWidget(txt) 
+    hbox.addWidget(r1)
+    hbox.addWidget(r2)
+    hbox.addWidget(r3)
+    vbox.addLayout(hbox)
     vbox.addWidget(b1)
-    dlg.setLayout(vbox)
+   
+    dlg.setLayout(vbox) # добавление в окно вертикального слоя
 
-    b1.clicked.connect(lambda: clicked(txt))
+    b1.clicked.connect(lambda: clicked(txt)) # увязка нажатия кнопки и вызова ф-ции внесения текста в файл
 
-    dlg.setWindowTitle("Dialog")
+    dlg.setWindowTitle("Внести новый контент")
     dlg.setWindowModality(Qt.ApplicationModal)
     dlg.exec_()    
 
 def clicked(b):
     print(b.text())
-
-def textchanged():
-    print('text')
 
 def show_quotes():
     dlg = QDialog()
