@@ -22,12 +22,12 @@ def main_window():
     vbox.addWidget(b3)
     win.setLayout(vbox)
 
-    b1.clicked.connect(show_quotes)
-    b2.clicked.connect(show_mems)
-    b3.clicked.connect(show_anecdotes)
+    b1.clicked.connect(lambda: show_text('quotes'))
+    b2.clicked.connect(lambda: show_text('mems'))
+    b3.clicked.connect(lambda: show_text('anecdotes'))
     b4.clicked.connect(input_note)
 
-    win.setWindowTitle("PyQt Dialog demo")
+    win.setWindowTitle("Случайное сообщение")
     win.show()
     sys.exit(app.exec_())
 
@@ -35,11 +35,12 @@ def input_note(): # окно для внесения новой информац
     dlg = QDialog()
 
     # создание переменных для кнопки, строчки внесения текста и радиокнопок 
-    txt = QLineEdit()   
+    txt = QTextEdit()   
     b1 = QPushButton("Внести")
     r1 = QRadioButton("Цитаты")
-    r2 = QRadioButton("Анекдоты")
-    r3 = QRadioButton("Внести заметку")
+    r2 = QRadioButton("Мемы")
+    r3 = QRadioButton("Анекдоты")
+    r1.setChecked(True) # Установить по умолчанию выбор на r1
     
     # создание вертикального и горизонтального слоя
     vbox = QVBoxLayout()
@@ -55,68 +56,39 @@ def input_note(): # окно для внесения новой информац
    
     dlg.setLayout(vbox) # добавление в окно вертикального слоя
 
-    b1.clicked.connect(lambda: clicked(txt)) # увязка нажатия кнопки и вызова ф-ции внесения текста в файл
+    b1.clicked.connect(lambda: new_text(txt, r1, r2)) # увязка нажатия кнопки и вызова ф-ции внесения текста в файл
 
     dlg.setWindowTitle("Внести новый контент")
     dlg.setWindowModality(Qt.ApplicationModal)
     dlg.exec_()    
 
-def clicked(b):
-    print(b.text())
+def new_text(b, r1, r2): # функция внесения текста, внесение происходит в зависимости от выбранной радиокнопки
+    if r1.isChecked():
+        with open('quotes.txt', 'a') as file:
+            print(b.toPlainText()+'\n', file=file)
+    elif r2.isChecked():
+        with open('mems.txt', 'a') as file:
+            print(b.toPlainText()+'\n', file=file)
+    else:
+        with open('anecdotes.txt', 'a') as file:
+            print(b.toPlainText()+'\n', file=file)
 
-def show_quotes():
+def show_text(text): # функция вывода случайного текста (цитаты, мема или анекдота), на вход подается строка с началом названия файла
     dlg = QDialog()
-
-    l = QLabel()    
-    l.setText(ch(quotes))
+         
+    with open(f'{text}.txt') as file: # открывается тот файл, начало которого подаётся на вход ф-ции, для формирования имени используется f-строка
+        txt = [c.strip('\n') for c in file.read().split('\n\n') if c] # списочное выражение используется для устранения пустых строк и символов '\n'
+    
+    l = QLabel() 
+    l.setText(ch(txt))
 
     vbox = QVBoxLayout()
     vbox.addWidget(l)
     dlg.setLayout(vbox)
 
-    dlg.setWindowTitle("Dialog")
+    dlg.setWindowTitle("Text")
     dlg.setWindowModality(Qt.ApplicationModal)
     dlg.exec_()
-
-def show_mems():
-    dlg = QDialog()
-
-    l = QLabel()    
-    l.setText(ch(mems))
-
-    vbox = QVBoxLayout()
-    vbox.addWidget(l)
-    dlg.setLayout(vbox)
-
-    dlg.setWindowTitle("Dialog")
-    dlg.setWindowModality(Qt.ApplicationModal)
-    dlg.exec_()
-
-def show_anecdotes():
-    dlg = QDialog()
-
-    l = QLabel()    
-    l.setText(ch(anecdotes))
-
-    vbox = QVBoxLayout()
-    vbox.addWidget(l)
-    dlg.setLayout(vbox)
-
-    dlg.setWindowTitle("Dialog")
-    dlg.setWindowModality(Qt.ApplicationModal)
-    dlg.exec_()    
-
-
-with open('quotes.txt') as file:
-    quotes = file.read().split('\n\n')
-#просто коммент
-with open('mems.txt') as file:
-    mems = file.read().split('\n\n')
-
-with open('anecdotes.txt') as file:
-    anecdotes = file.read().split('\n\n')
 
 if __name__ == '__main__':
     main_window()
-
-
